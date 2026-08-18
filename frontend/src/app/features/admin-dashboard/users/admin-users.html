@@ -1,0 +1,47 @@
+<h1 class="text-xl font-semibold text-zinc-900 mb-6">Users</h1>
+
+<input [(ngModel)]="search" (ngModelChange)="load()" placeholder="Search by name or email..." class="border border-zinc-300 rounded-md px-3 py-2 text-sm mb-4 w-full max-w-sm" />
+
+@if (users().length === 0) {
+  <app-empty-state icon="👤" title="No users found" />
+} @else {
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="text-left text-zinc-400 border-b border-zinc-200">
+          <th class="py-2 pr-4 font-medium">Name</th>
+          <th class="py-2 pr-4 font-medium">Email</th>
+          <th class="py-2 pr-4 font-medium">Role</th>
+          <th class="py-2 pr-4 font-medium">Status</th>
+          <th class="py-2 pr-4 font-medium"></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (u of users(); track u.id) {
+          <tr class="border-b border-zinc-100">
+            <td class="py-2 pr-4 font-medium text-zinc-900">{{ u.name }}</td>
+            <td class="py-2 pr-4 text-zinc-600">{{ u.email }}</td>
+            <td class="py-2 pr-4">
+              <select [ngModel]="u.role" (ngModelChange)="setRole(u, $event)" class="border border-zinc-300 rounded px-2 py-1 text-xs">
+                <option value="participant">Participant</option>
+                <option value="organizer">Organizer</option>
+                <option value="admin">Admin</option>
+              </select>
+            </td>
+            <td class="py-2 pr-4">
+              <span class="text-xs px-2 py-0.5 rounded" [class.bg-emerald-50]="u.status === 'active'" [class.text-emerald-700]="u.status === 'active'"
+                [class.bg-red-50]="u.status === 'suspended'" [class.text-red-700]="u.status === 'suspended'">
+                {{ u.status }}
+              </span>
+            </td>
+            <td class="py-2 pr-4">
+              <button type="button" class="text-xs font-medium border border-zinc-300 rounded px-2 py-1 hover:bg-zinc-50" (click)="toggleStatus(u)">
+                {{ u.status === 'suspended' ? 'Unsuspend' : 'Suspend' }}
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}

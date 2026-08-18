@@ -1,0 +1,128 @@
+@if (loading()) {
+  <app-loading-spinner />
+} @else if (!team()) {
+  <app-empty-state icon="🔍" title="Team not found" />
+} @else {
+  <div class="max-w-3xl mx-auto px-4 py-8">
+    <a [routerLink]="['/competitions', team()!.competition_id]" class="text-sm text-zinc-500 hover:text-zinc-900">&larr; Back to competition</a>
+
+    <div class="flex items-start justify-between mt-3">
+      <div>
+        <h1 class="text-2xl font-semibold text-zinc-900">{{ team()!.name }}</h1>
+        <p class="text-zinc-500 text-sm mt-1">Captain: {{ team()!.captain_name }} · {{ team()!.member_count }}/{{ team()!.max_members }} members</p>
+      </div>
+      @if (isCaptain()) {
+        <button type="button" class="text-sm font-medium border border-zinc-300 rounded-md px-3 py-1.5 hover:bg-zinc-50" (click)="editing.set(!editing())">
+          {{ editing() ? 'Cancel' : 'Edit Team' }}
+        </button>
+      }
+    </div>
+
+    @if (team()!.description && !editing()) {
+      <p class="text-zinc-700 mt-3">{{ team()!.description }}</p>
+    }
+
+    @if (editing()) {
+      <div class="mt-4 border border-zinc-200 rounded-lg p-4 bg-white space-y-3">
+        <div>
+          <label class="text-xs text-zinc-500">Team name</label>
+          <input [(ngModel)]="editName" class="w-full border border-zinc-300 rounded-md px-3 py-2 text-sm mt-1" />
+        </div>
+        <div>
+          <label class="text-xs text-zinc-500">Description</label>
+          <textarea [(ngModel)]="editDescription" rows="2" class="w-full border border-zinc-300 rounded-md px-3 py-2 text-sm mt-1"></textarea>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="text-xs text-zinc-500">Max members</label>
+            <input type="number" min="1" [(ngModel)]="editMaxMembers" class="w-full border border-zinc-300 rounded-md px-3 py-2 text-sm mt-1" />
+          </div>
+          <div class="flex items-center gap-2 mt-5">
+            <input type="checkbox" id="looking" [(ngModel)]="editLookingForMembers" />
+            <label for="looking" class="text-sm text-zinc-700">Looking for members</label>
+          </div>
+        </div>
+        @if (editLookingForMembers) {
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="text-xs text-zinc-500">Role needed</label>
+              <input [(ngModel)]="editLookingForRole" placeholder="e.g. Frontend Developer" class="w-full border border-zinc-300 rounded-md px-3 py-2 text-sm mt-1" />
+            </div>
+            <div>
+              <label class="text-xs text-zinc-500">Skills</label>
+              <input [(ngModel)]="editRequiredSkills" placeholder="e.g. Angular, UI/UX" class="w-full border border-zinc-300 rounded-md px-3 py-2 text-sm mt-1" />
+            </div>
+          </div>
+        }
+        <button type="button" class="text-sm font-medium bg-zinc-900 text-white px-4 py-2 rounded-md" (click)="saveEdits()">Save Changes</button>
+      </div>
+    }
+
+    @if (team()!.looking_for_members && !editing()) {
+      <div class="mt-3 text-sm bg-emerald-50 text-emerald-800 rounded-md px-3 py-2 inline-block">
+        Looking for: {{ team()!.looking_for_role || 'members' }} @if (team()!.required_skills) { · Skills: {{ team()!.required_skills }} }
+      </div>
+    }
+
+    <h2 class="text-sm font-semibold text-zinc-900 mt-8 mb-3">Members</h2>
+    <div class="space-y-2">
+      @for (m of team()!.members; track m.id) {
+        <div class="flex items-center justify-between border border-zinc-200 rounded-md px-3 py-2 bg-white text-sm">
+          <div class="flex items-center gap-2">
+            @if (m.profile_picture) {
+              <img [src]="m.profile_picture" class="h-6 w-6 rounded-full" alt="" />
+            } @else {
+              <span class="h-6 w-6 rounded-full bg-zinc-200 flex items-center justify-center text-xs">{{ m.name.charAt(0) }}</span>
+            }
+            <span class="font-medium text-zinc-900">{{ m.name }}</span>
+            @if (m.role === 'captain') {
+              <span class="text-xs text-amber-600 font-medium">Captain</span>
+            }
+          </div>
+          @if (isCaptain() && m.role !== 'captain') {
+            <div class="flex gap-2">
+              <button type="button" class="text-xs text-zinc-500 hover:text-zinc-900" (click)="transferCaptain(m.user_id)">Make Captain</button>
+              <button type="button" class="text-xs text-red-600 hover:text-red-800" (click)="removeMember(m.user_id)">Remove</button>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    @if (isCaptain() && joinRequests().length > 0) {
+      <h2 class="text-sm font-semibold text-zinc-900 mt-8 mb-3">Join Requests</h2>
+      <div class="space-y-2">
+        @for (r of joinRequests(); track r.id) {
+          <div class="flex items-center justify-between border border-zinc-200 rounded-md px-3 py-2 bg-white text-sm">
+            <div>
+              <span class="font-medium text-zinc-900">{{ r.name }}</span>
+              @if (r.message) { <p class="text-zinc-500 text-xs mt-0.5">{{ r.message }}</p> }
+            </div>
+            <div class="flex gap-2">
+              <button type="button" class="text-xs font-medium bg-zinc-900 text-white px-2 py-1 rounded" (click)="respondToRequest(r, 'accept')">Accept</button>
+              <button type="button" class="text-xs font-medium border border-zinc-300 px-2 py-1 rounded" (click)="respondToRequest(r, 'reject')">Reject</button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <div class="mt-8 flex gap-3">
+      @if (isMember() && !isCaptain()) {
+        <button type="button" class="text-sm text-red-600 hover:text-red-800" (click)="leaveTeam()">Leave Team</button>
+      }
+      @if (isCaptain()) {
+        <button type="button" class="text-sm text-red-600 hover:text-red-800" (click)="confirmDisband.set(true)">Disband Team</button>
+      }
+    </div>
+
+    <app-confirm-dialog
+      [open]="confirmDisband()"
+      title="Disband this team?"
+      message="This will remove the team and cancel its registration. This cannot be undone."
+      confirmLabel="Disband"
+      (confirmed)="disbandTeam(); confirmDisband.set(false)"
+      (cancelled)="confirmDisband.set(false)"
+    />
+  </div>
+}

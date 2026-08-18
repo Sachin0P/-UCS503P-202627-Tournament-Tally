@@ -1,0 +1,213 @@
+@if (loading()) {
+  <app-loading-spinner />
+} @else if (!competition()) {
+  <app-empty-state icon="🔍" title="Competition not found" />
+} @else {
+  <div [attr.data-category]="competition()!.category">
+    <div class="h-40 sm:h-56 bg-zinc-100 flex items-center justify-center text-zinc-300">
+      @if (competition()!.banner) {
+        <img [src]="competition()!.banner" [alt]="competition()!.name" class="h-full w-full object-cover" />
+      } @else {
+        <span class="text-sm">No banner</span>
+      }
+    </div>
+
+    <div class="max-w-5xl mx-auto px-4 py-6">
+      <div class="flex flex-wrap items-center gap-2 mb-2">
+        <app-category-tag [category]="competition()!.category" />
+        <app-status-badge [status]="competition()!.status" />
+        @if (isOwner()) {
+          <a [routerLink]="['/organizer/competitions', competition()!.id, 'manage']" class="text-xs font-medium text-zinc-600 border border-zinc-300 rounded px-2 py-0.5 hover:bg-zinc-50">
+            Manage
+          </a>
+        }
+      </div>
+
+      <h1 class="text-2xl font-semibold text-zinc-900">{{ competition()!.name }}</h1>
+      <p class="text-zinc-500 mt-1">
+        <a [routerLink]="['/organizations', competition()!.organization_id]" class="hover:text-zinc-900 hover:underline">{{ competition()!.organizer_name }}</a>
+        · {{ competition()!.organizer_college }}
+      </p>
+
+      <div class="flex flex-wrap gap-x-6 gap-y-1 text-sm text-zinc-600 mt-3">
+        <span>📅 {{ competition()!.start_date | date: 'mediumDate' }} – {{ competition()!.end_date | date: 'mediumDate' }}</span>
+        <span>📍 {{ competition()!.venue || (competition()!.mode === 'online' ? 'Online' : 'TBA') }}</span>
+        <span>⏳ Register by {{ competition()!.registration_deadline | date: 'medium' }}</span>
+        <span>💰 {{ competition()!.registration_fee > 0 ? (competition()!.registration_fee | currency: 'INR' : 'symbol' : '1.0-0') : 'Free' }}</span>
+      </div>
+
+      <!-- Register panel -->
+      <div class="mt-5 border border-zinc-200 rounded-lg p-4 bg-white">
+        @if (!auth.isAuthenticated()) {
+          <a routerLink="/auth/login" class="inline-block bg-zinc-900 text-white text-sm font-medium px-4 py-2 rounded-md">Sign in to Register</a>
+        } @else if (myRegistration()) {
+          <div class="flex items-center gap-2 text-sm">
+            <span class="text-zinc-600">Your registration:</span>
+            <app-status-badge [status]="myRegistration()!.status" />
+            @if (myRegistration()!.team_name) {
+              <span class="text-zinc-500">({{ myRegistration()!.team_name }})</span>
+            }
+          </div>
+        } @else if (!registrationOpen()) {
+          <p class="text-sm text-zinc-500">Registration is closed for this competition.</p>
+        } @else {
+          <div class="flex flex-wrap items-center gap-2">
+            <button type="button" class="bg-zinc-900 text-white text-sm font-medium px-4 py-2 rounded-md disabled:opacity-50"
+              [disabled]="isRegistering()" (click)="registerIndividually()">
+              Register Individually
+            </button>
+            @if (myTeamsICaptain().length > 0) {
+              @for (t of myTeamsICaptain(); track t.id) {
+                <button type="button" class="border border-zinc-300 text-sm font-medium px-4 py-2 rounded-md disabled:opacity-50"
+                  [disabled]="isRegistering()" (click)="registerTeam(t.id)">
+                  Register "{{ t.name }}"
+                </button>
+              }
+            } @else {
+              <button type="button" class="border border-zinc-300 text-sm font-medium px-4 py-2 rounded-md" (click)="activeTab.set('teams')">
+                Create / Join a Team
+              </button>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Tabs -->
+      <div class="mt-8 border-b border-zinc-200 flex gap-1 overflow-x-auto">
+        @for (tab of [
+          {id: 'overview', label: 'Overview'},
+          {id: 'teams', label: 'Teams & Participants'},
+          {id: 'matches', label: 'Fixtures & Matches'},
+          {id: 'standings', label: 'Standings & Results'},
+          {id: 'announcements', label: 'Announcements'}
+        ]; track tab.id) {
+          <button
+            type="button"
+            class="px-3 py-2 text-sm font-medium border-b-2 whitespace-nowrap"
+            [class.border-zinc-900]="activeTab() === tab.id"
+            [class.text-zinc-900]="activeTab() === tab.id"
+            [class.border-transparent]="activeTab() !== tab.id"
+            [class.text-zinc-500]="activeTab() !== tab.id"
+            (click)="activeTab.set($any(tab.id))"
+          >
+            {{ tab.label }}
+          </button>
+        }
+      </div>
+
+      <div class="py-6">
+        @switch (activeTab()) {
+          @case ('overview') {
+            <div class="prose prose-sm max-w-none text-zinc-700 space-y-4">
+              <div>
+                <h3 class="font-semibold text-zinc-900 mb-1">Description</h3>
+                <p class="whitespace-pre-line">{{ competition()!.description || 'No description provided.' }}</p>
+              </div>
+              <div>
+                <h3 class="font-semibold text-zinc-900 mb-1">Rules</h3>
+                <p class="whitespace-pre-line">{{ competition()!.rules || 'No rules provided.' }}</p>
+              </div>
+              <div class="text-sm text-zinc-500">
+                Format: <span class="capitalize">{{ competition()!.format.replace('_', ' ') }}</span>
+                @if (competition()!.max_teams) { · Max teams: {{ competition()!.max_teams }} }
+                @if (competition()!.max_participants) { · Max participants: {{ competition()!.max_participants }} }
+              </div>
+            </div>
+          }
+          @case ('teams') {
+            @if (auth.isAuthenticated()) {
+              <div class="mb-4">
+                <button type="button" class="text-sm font-medium bg-zinc-900 text-white px-3 py-1.5 rounded-md" (click)="showCreateTeam.set(!showCreateTeam())">
+                  {{ showCreateTeam() ? 'Cancel' : '+ Create Team' }}
+                </button>
+              </div>
+            }
+            @if (showCreateTeam()) {
+              <div class="border border-zinc-200 rounded-lg p-4 bg-white mb-5 space-y-3">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <input [(ngModel)]="newTeam.name" placeholder="Team name" class="border border-zinc-300 rounded-md px-3 py-2 text-sm" />
+                  <input type="number" min="1" [(ngModel)]="newTeam.maxMembers" placeholder="Max members" class="border border-zinc-300 rounded-md px-3 py-2 text-sm" />
+                </div>
+                <textarea [(ngModel)]="newTeam.description" placeholder="Description (optional)" rows="2" class="w-full border border-zinc-300 rounded-md px-3 py-2 text-sm"></textarea>
+                <div class="flex items-center gap-2">
+                  <input type="checkbox" id="lfm" [(ngModel)]="newTeam.lookingForMembers" />
+                  <label for="lfm" class="text-sm text-zinc-700">Looking for members</label>
+                </div>
+                @if (newTeam.lookingForMembers) {
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <input [(ngModel)]="newTeam.lookingForRole" placeholder="Role needed (e.g. Frontend Developer)" class="border border-zinc-300 rounded-md px-3 py-2 text-sm" />
+                    <input [(ngModel)]="newTeam.requiredSkills" placeholder="Skills (e.g. Angular, UI/UX)" class="border border-zinc-300 rounded-md px-3 py-2 text-sm" />
+                  </div>
+                }
+                <button type="button" class="text-sm font-medium bg-zinc-900 text-white px-4 py-2 rounded-md disabled:opacity-50" [disabled]="creatingTeam()" (click)="createTeam()">
+                  Create Team
+                </button>
+              </div>
+            }
+            @if (teams().length === 0) {
+              <app-empty-state icon="👥" title="No teams yet" subtitle="Be the first to create one." />
+            } @else {
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                @for (t of teams(); track t.id) {
+                  <app-team-card [team]="t" (requestToJoin)="requestToJoinTeam($event)" />
+                }
+              </div>
+            }
+          }
+          @case ('matches') {
+            @if (matches().length === 0) {
+              <app-empty-state icon="📋" title="Fixtures not generated yet" subtitle="Check back once the organizer generates the schedule." />
+            } @else if (isKnockout()) {
+              <app-bracket [matches]="matches()" />
+            } @else {
+              <div class="space-y-3">
+                @for (m of matches(); track m.id) {
+                  <div class="border border-zinc-200 rounded-md p-3 flex items-center justify-between bg-white text-sm">
+                    <div>
+                      <p class="text-xs text-zinc-400">{{ m.round }}</p>
+                      <p class="font-medium text-zinc-900">{{ m.team_a_name || 'TBD' }} vs {{ m.team_b_name || 'TBD' }}</p>
+                      @if (m.scheduled_at) { <p class="text-xs text-zinc-500">{{ m.scheduled_at | date: 'medium' }}</p> }
+                    </div>
+                    <div class="text-right">
+                      <p class="font-semibold text-zinc-900">{{ m.score_a ?? '-' }} : {{ m.score_b ?? '-' }}</p>
+                      <app-status-badge [status]="m.status" />
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+          }
+          @case ('standings') {
+            <app-standings-table [standings]="standings()" [showMatchColumns]="competition()!.category !== 'ACADEMIC'" />
+          }
+          @case ('announcements') {
+            @if (isOwner()) {
+              <div class="border border-zinc-200 rounded-lg p-4 bg-white mb-5 space-y-2">
+                <input [(ngModel)]="newAnnouncementTitle" placeholder="Title" class="w-full border border-zinc-300 rounded-md px-3 py-2 text-sm" />
+                <textarea [(ngModel)]="newAnnouncementMessage" placeholder="Message" rows="2" class="w-full border border-zinc-300 rounded-md px-3 py-2 text-sm"></textarea>
+                <button type="button" class="text-sm font-medium bg-zinc-900 text-white px-3 py-1.5 rounded-md" (click)="postAnnouncement()">
+                  Publish Announcement
+                </button>
+              </div>
+            }
+            @if (announcements().length === 0) {
+              <app-empty-state icon="📣" title="No announcements yet" />
+            } @else {
+              <div class="space-y-3">
+                @for (a of announcements(); track a.id) {
+                  <div class="border border-zinc-200 rounded-md p-3 bg-white text-sm">
+                    <div class="flex items-center justify-between">
+                      <p class="font-medium text-zinc-900">{{ a.title }}</p>
+                      <p class="text-xs text-zinc-400">{{ a.created_at | date: 'medium' }}</p>
+                    </div>
+                    <p class="text-zinc-600 mt-1">{{ a.message }}</p>
+                  </div>
+                }
+              </div>
+            }
+          }
+        }
+      </div>
+    </div>
+  </div>
+}

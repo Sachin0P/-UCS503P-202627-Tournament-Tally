@@ -1,0 +1,102 @@
+<div class="max-w-5xl mx-auto px-4 py-8">
+  <h1 class="text-2xl font-semibold text-zinc-900">Welcome back, {{ auth.currentUser()?.name }}</h1>
+
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6">
+    <div class="border border-zinc-200 rounded-lg p-4 bg-white">
+      <p class="text-2xl font-semibold text-zinc-900">{{ stats().registered }}</p>
+      <p class="text-xs text-zinc-500 mt-0.5">Registered Competitions</p>
+    </div>
+    <div class="border border-zinc-200 rounded-lg p-4 bg-white">
+      <p class="text-2xl font-semibold text-zinc-900">{{ stats().activeTeams }}</p>
+      <p class="text-xs text-zinc-500 mt-0.5">Active Teams</p>
+    </div>
+    <div class="border border-zinc-200 rounded-lg p-4 bg-white">
+      <p class="text-2xl font-semibold text-zinc-900">{{ stats().upcomingMatches }}</p>
+      <p class="text-xs text-zinc-500 mt-0.5">Upcoming Matches</p>
+    </div>
+    <div class="border border-zinc-200 rounded-lg p-4 bg-white">
+      <p class="text-2xl font-semibold text-zinc-900">{{ stats().completed }}</p>
+      <p class="text-xs text-zinc-500 mt-0.5">Approved Registrations</p>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <app-loading-spinner />
+  } @else {
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+      <section>
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="font-semibold text-zinc-900">My Competitions</h2>
+          <a routerLink="/competitions" class="text-xs text-zinc-500 hover:text-zinc-900">Explore more →</a>
+        </div>
+        @if (registrations().length === 0) {
+          <app-empty-state icon="🏁" title="No registrations yet" />
+        } @else {
+          <div class="space-y-2">
+            @for (r of registrations(); track r.id) {
+              <a [routerLink]="['/competitions', r.competition_id]" class="flex items-center justify-between border border-zinc-200 rounded-md px-3 py-2 bg-white text-sm hover:bg-zinc-50">
+                <span class="font-medium text-zinc-900">{{ r.competition_name }}</span>
+                <app-status-badge [status]="r.status" />
+              </a>
+            }
+          </div>
+        }
+      </section>
+
+      <section>
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="font-semibold text-zinc-900">My Teams</h2>
+          <a routerLink="/find-team" class="text-xs text-zinc-500 hover:text-zinc-900">Find a team →</a>
+        </div>
+        @if (teams().length === 0) {
+          <app-empty-state icon="👥" title="You're not on a team yet" />
+        } @else {
+          <div class="space-y-2">
+            @for (t of teams(); track t.id) {
+              <a [routerLink]="['/teams', t.id]" class="flex items-center justify-between border border-zinc-200 rounded-md px-3 py-2 bg-white text-sm hover:bg-zinc-50">
+                <span class="font-medium text-zinc-900">{{ t.name }}</span>
+                <span class="text-xs text-zinc-500">{{ t.competition_name }}</span>
+              </a>
+            }
+          </div>
+        }
+      </section>
+
+      <section>
+        <h2 class="font-semibold text-zinc-900 mb-3">Upcoming Matches</h2>
+        @if (upcomingMatches().length === 0) {
+          <app-empty-state icon="📅" title="No upcoming matches" />
+        } @else {
+          <div class="space-y-2">
+            @for (m of upcomingMatches(); track m.id) {
+              <div class="border border-zinc-200 rounded-md px-3 py-2 bg-white text-sm">
+                <p class="font-medium text-zinc-900">{{ m.team_a_name || 'TBD' }} vs {{ m.team_b_name || 'TBD' }}</p>
+                <p class="text-xs text-zinc-500">{{ m.competition_name }} · {{ m.round }}</p>
+                @if (m.scheduled_at) { <p class="text-xs text-zinc-400">{{ m.scheduled_at | date: 'medium' }}</p> }
+              </div>
+            }
+          </div>
+        }
+      </section>
+
+      <section>
+        <h2 class="font-semibold text-zinc-900 mb-3">Recent Results</h2>
+        @if (recentResults().length === 0) {
+          <app-empty-state icon="🏅" title="No results yet" />
+        } @else {
+          <div class="space-y-2">
+            @for (m of recentResults(); track m.id) {
+              <div class="border border-zinc-200 rounded-md px-3 py-2 bg-white text-sm flex items-center justify-between">
+                <div>
+                  <p class="font-medium text-zinc-900">{{ m.team_a_name }} {{ m.score_a }} - {{ m.score_b }} {{ m.team_b_name }}</p>
+                  <p class="text-xs text-zinc-500">{{ m.competition_name }}</p>
+                </div>
+                @if (m.winner_name) { <span class="text-xs font-medium text-emerald-700">{{ m.winner_name }} won</span> }
+              </div>
+            }
+          </div>
+        }
+      </section>
+    </div>
+  }
+</div>

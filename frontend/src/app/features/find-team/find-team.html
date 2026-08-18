@@ -1,0 +1,120 @@
+<div class="max-w-6xl mx-auto px-4 py-8">
+  <h1 class="text-2xl font-semibold text-zinc-900 mb-1">Find a Team</h1>
+  <p class="text-zinc-500 mb-6">Browse teams that need players, or let teams find you.</p>
+
+  <div class="flex gap-1 border-b border-zinc-200 mb-6">
+    <button type="button" class="px-3 py-2 text-sm font-medium border-b-2"
+      [class.border-zinc-900]="activeTab() === 'teams'" [class.text-zinc-900]="activeTab() === 'teams'"
+      [class.border-transparent]="activeTab() !== 'teams'" [class.text-zinc-500]="activeTab() !== 'teams'"
+      (click)="setTab('teams')">
+      Teams Looking for Members
+    </button>
+    <button type="button" class="px-3 py-2 text-sm font-medium border-b-2"
+      [class.border-zinc-900]="activeTab() === 'players'" [class.text-zinc-900]="activeTab() === 'players'"
+      [class.border-transparent]="activeTab() !== 'players'" [class.text-zinc-500]="activeTab() !== 'players'"
+      (click)="setTab('players')">
+      Players Looking for a Team
+    </button>
+  </div>
+
+  <div class="flex flex-wrap gap-3 mb-6">
+    <select [(ngModel)]="filterCompetitionId" (ngModelChange)="load()" class="border border-zinc-300 rounded-md px-3 py-2 text-sm">
+      <option value="">All competitions</option>
+      @for (c of competitions(); track c.id) {
+        <option [value]="c.id">{{ c.name }}</option>
+      }
+    </select>
+    <select [(ngModel)]="filterCategory" (ngModelChange)="load()" class="border border-zinc-300 rounded-md px-3 py-2 text-sm">
+      <option value="">All categories</option>
+      <option value="SPORTS">🏆 Sports</option>
+      <option value="ACADEMIC">🎓 Academic</option>
+      <option value="ESPORTS">🎮 Esports</option>
+    </select>
+    <input [(ngModel)]="filterRole" (ngModelChange)="load()" placeholder="Role or skill..." class="border border-zinc-300 rounded-md px-3 py-2 text-sm" />
+
+    @if (activeTab() === 'players' && auth.isAuthenticated()) {
+      <button type="button" class="ml-auto text-sm font-medium bg-zinc-900 text-white px-3 py-2 rounded-md" (click)="showPostForm.set(!showPostForm())">
+        {{ showPostForm() ? 'Cancel' : 'I need a team' }}
+      </button>
+    }
+  </div>
+
+  @if (showPostForm()) {
+    <div class="border border-zinc-200 rounded-lg p-4 bg-white mb-6 space-y-3">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <select [(ngModel)]="postCompetitionId" class="border border-zinc-300 rounded-md px-3 py-2 text-sm">
+          <option value="">Select competition</option>
+          @for (c of competitions(); track c.id) {
+            <option [value]="c.id">{{ c.name }}</option>
+          }
+        </select>
+        <input [(ngModel)]="postRole" placeholder="Role you're looking for (e.g. Backend Developer)" class="border border-zinc-300 rounded-md px-3 py-2 text-sm" />
+        <input [(ngModel)]="postSkills" placeholder="Skills (e.g. Node.js, Express)" class="border border-zinc-300 rounded-md px-3 py-2 text-sm" />
+        <select [(ngModel)]="postExperience" class="border border-zinc-300 rounded-md px-3 py-2 text-sm">
+          <option value="">Experience level</option>
+          <option value="Beginner">Beginner</option>
+          <option value="Intermediate">Intermediate</option>
+          <option value="Advanced">Advanced</option>
+        </select>
+      </div>
+      <textarea [(ngModel)]="postDescription" rows="2" placeholder="Tell teams a bit about yourself..." class="w-full border border-zinc-300 rounded-md px-3 py-2 text-sm"></textarea>
+      <button type="button" class="text-sm font-medium bg-zinc-900 text-white px-4 py-2 rounded-md" (click)="submitPost()">Post</button>
+    </div>
+  }
+
+  @if (loading()) {
+    <app-loading-spinner />
+  } @else if (activeTab() === 'teams') {
+    @if (teams().length === 0) {
+      <app-empty-state icon="👥" title="No teams looking for members right now" />
+    } @else {
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        @for (t of teams(); track t.id) {
+          <app-team-card [team]="t" (requestToJoin)="requestToJoinTeam($event)" />
+        }
+      </div>
+    }
+  } @else {
+    @if (posts().length === 0) {
+      <app-empty-state icon="🙋" title="No one is looking for a team right now" />
+    } @else {
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        @for (p of posts(); track p.id) {
+          <div class="border border-zinc-200 rounded-lg p-4 bg-white">
+            <div class="flex items-center gap-2">
+              @if (p.profile_picture) {
+                <img [src]="p.profile_picture" class="h-6 w-6 rounded-full" alt="" />
+              } @else {
+                <span class="h-6 w-6 rounded-full bg-zinc-200 flex items-center justify-center text-xs">{{ p.user_name.charAt(0) }}</span>
+              }
+              <span class="font-medium text-zinc-900">{{ p.user_name }}</span>
+            </div>
+            <p class="text-xs text-zinc-500 mt-1">{{ p.competition_name }}</p>
+            <p class="text-sm text-zinc-700 mt-2">Looking for: <span class="font-medium">{{ p.role }}</span></p>
+            @if (p.skills) { <p class="text-xs text-zinc-500 mt-0.5">Skills: {{ p.skills }}</p> }
+            @if (p.experience) { <p class="text-xs text-zinc-500">Experience: {{ p.experience }}</p> }
+            @if (p.description) { <p class="text-sm text-zinc-600 mt-2">{{ p.description }}</p> }
+
+            @if (auth.isAuthenticated() && auth.currentUser()?.id !== p.user_id) {
+              @if (invitingPostId() === p.id) {
+                <div class="mt-3 space-y-1">
+                  @for (t of myTeamsForPost(p.id); track t.id) {
+                    <button type="button" class="w-full text-left text-xs border border-zinc-300 rounded px-2 py-1 hover:bg-zinc-50" (click)="inviteToTeam(p, t.id)">
+                      Invite to "{{ t.name }}"
+                    </button>
+                  } @empty {
+                    <p class="text-xs text-zinc-400">You don't captain a team in this competition.</p>
+                  }
+                </div>
+              } @else {
+                <button type="button" class="mt-3 w-full text-sm font-medium border border-zinc-300 rounded-md py-1.5 hover:bg-zinc-50" (click)="startInvite(p)">
+                  Invite to my team
+                </button>
+              }
+            }
+          </div>
+        }
+      </div>
+    }
+  }
+</div>

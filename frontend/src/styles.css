@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+:root {
+  --color-bg: #fafafa;
+  --color-surface: #ffffff;
+  --color-border: #e5e5e5;
+  --color-text: #18181b;
+  --color-text-muted: #71717a;
+  --color-accent: #18181b;
+  --color-accent-contrast: #ffffff;
+
+  --color-sports: #047857;
+  --color-academic: #4338ca;
+  --color-esports: #be123c;
+}
+
+[data-category="SPORTS"] { --color-accent: var(--color-sports); }
+[data-category="ACADEMIC"] { --color-accent: var(--color-academic); }
+[data-category="ESPORTS"] { --color-accent: var(--color-esports); }
+
+/* Tailwind utilities live in @layer utilities; base styles must be layered
+   too, otherwise these unlayered rules would beat utility classes like
+   text-white regardless of specificity. */
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html, body {
+    height: 100%;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a {
+    color: inherit;
+  }
+}

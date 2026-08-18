@@ -1,0 +1,36 @@
+<div class="flex items-center justify-between mb-6">
+  <h1 class="text-xl font-semibold text-zinc-900">My Competitions</h1>
+  <a routerLink="/organizer/competitions/new" class="text-sm font-medium bg-zinc-900 text-white px-3 py-1.5 rounded-md">+ New Competition</a>
+</div>
+
+@if (loading()) {
+  <app-loading-spinner />
+} @else if (competitions().length === 0) {
+  <app-empty-state icon="🏁" title="No competitions yet" />
+} @else {
+  <div class="space-y-2">
+    @for (c of competitions(); track c.id) {
+      <div class="border border-zinc-200 rounded-lg p-4 bg-white flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <app-category-tag [category]="c.category" />
+            <app-status-badge [status]="c.status" />
+          </div>
+          <p class="font-medium text-zinc-900">{{ c.name }}</p>
+          <p class="text-xs text-zinc-500">{{ c.start_date | date: 'mediumDate' }} · {{ c.teams_count }} teams · {{ c.registrations_count }} registrations</p>
+        </div>
+        <div class="flex items-center gap-2 text-sm">
+          <a [routerLink]="['/organizer/competitions', c.id, 'manage']" class="border border-zinc-300 rounded-md px-3 py-1.5 hover:bg-zinc-50">Manage</a>
+          @if (c.status === 'draft') {
+            <button type="button" class="bg-zinc-900 text-white rounded-md px-3 py-1.5" (click)="publish(c)">Publish</button>
+          } @else if (c.status === 'published') {
+            <button type="button" class="border border-zinc-300 rounded-md px-3 py-1.5 hover:bg-zinc-50" (click)="unpublish(c)">Unpublish</button>
+          }
+          @if (c.status !== 'cancelled' && c.status !== 'completed') {
+            <button type="button" class="text-red-600 hover:text-red-800 px-2" (click)="cancel(c)">Cancel</button>
+          }
+        </div>
+      </div>
+    }
+  </div>
+}

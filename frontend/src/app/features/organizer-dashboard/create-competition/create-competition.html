@@ -1,0 +1,151 @@
+<h1 class="text-xl font-semibold text-zinc-900 mb-1">Create Competition</h1>
+<p class="text-sm text-zinc-500 mb-6">Step {{ step() }} of 4</p>
+
+<div class="flex gap-1 mb-6">
+  @for (i of [1, 2, 3, 4]; track i) {
+    <div class="h-1.5 flex-1 rounded-full" [class.bg-zinc-900]="i <= step()" [class.bg-zinc-200]="i > step()"></div>
+  }
+</div>
+
+@if (organizations().length === 0) {
+  <p class="text-sm text-amber-600 border border-amber-200 bg-amber-50 rounded-md p-3">
+    You need an organization before creating a competition. Create one from the Organize page first.
+  </p>
+} @else {
+  <div class="border border-zinc-200 rounded-lg p-5 bg-white space-y-4">
+    @if (step() === 1) {
+      <h2 class="font-medium text-zinc-900">Basic Information</h2>
+      <div>
+        <label class="text-xs text-zinc-500">Organization</label>
+        <select [(ngModel)]="form.organizationId" class="w-full border border-zinc-300 rounded-md px-3 py-2 text-sm mt-1">
+          @for (o of organizations(); track o.id) { <option [value]="o.id">{{ o.name }}</option> }
+        </select>
+      </div>
+      <div>
+        <label class="text-xs text-zinc-500">Competition Name *</label>
+        <input [(ngModel)]="form.name" class="w-full border border-zinc-300 rounded-md px-3 py-2 text-sm mt-1" />
+      </div>
+      <div>
+        <label class="text-xs text-zinc-500">Description</label>
+        <textarea [(ngModel)]="form.description" rows="3" class="w-full border border-zinc-300 rounded-md px-3 py-2 text-sm mt-1"></textarea>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-xs text-zinc-500">Category *</label>
+          <select [(ngModel)]="form.category" (ngModelChange)="onCategoryChange()" class="w-full border border-zinc-300 rounded-md px-3 py-2 text-sm mt-1">
+            <option value="SPORTS">🏆 Sports</option>
+            <option value="ACADEMIC">🎓 Academic</option>
+            <option value="ESPORTS">🎮 Esports</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-xs text-zinc-500">Type</label>
+          <input [(ngModel)]="form.type" placeholder="e.g. Cricket, Hackathon, BGMI" class="w-full border border-zinc-300 rounded-md px-3 py-2 text-sm mt-1" />
+        </div>
+      </div>
+      <div>
+        <label class="text-xs text-zinc-500">Banner URL</label>
+        <input [(ngModel)]="form.banner" placeholder="https://..." class="w-full border border-zinc-300 rounded-md px-3 py-2 text-sm mt-1" />
+      </div>
+    }
+
+    @if (step() === 2) {
+      <h2 class="font-medium text-zinc-900">Event Details</h2>
+      <div class="grid grid-cols-3 gap-3">
+        <div>
+          <label class="text-xs text-zinc-500">Start Date *</label>
+          <input type="date" [(ngModel)]="form.startDate" class="w-full border border-zinc-300 rounded-md px-3 py-2 text-sm mt-1" />
+        </div>
+        <div>
+          <label class="text-xs text-zinc-500">End Date *</label>
+          <input type="date" [(ngModel)]="form.endDate" class="w-full border border-zinc-300 rounded-md px-3 py-2 text-sm mt-1" />
+        </div>
+        <div>
+          <label class="text-xs text-zinc-500">Registration Deadline *</label>
+          <input type="date" [(ngModel)]="form.registrationDeadline" class="w-full border border-zinc-300 rounded-md px-3 py-2 text-sm mt-1" />
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-xs text-zinc-500">Mode</label>
+          <select [(ngModel)]="form.mode" class="w-full border border-zinc-300 rounded-md px-3 py-2 text-sm mt-1">
+            <option value="offline">Offline</option>
+            <option value="online">Online</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-xs text-zinc-500">Venue</label>
+          <input [(ngModel)]="form.venue" class="w-full border border-zinc-300 rounded-md px-3 py-2 text-sm mt-1" />
+        </div>
+      </div>
+      <div class="grid grid-cols-3 gap-3">
+        <div>
+          <label class="text-xs text-zinc-500">Max Participants</label>
+          <input type="number" min="0" [(ngModel)]="form.maxParticipants" class="w-full border border-zinc-300 rounded-md px-3 py-2 text-sm mt-1" />
+        </div>
+        <div>
+          <label class="text-xs text-zinc-500">Max Teams</label>
+          <input type="number" min="0" [(ngModel)]="form.maxTeams" class="w-full border border-zinc-300 rounded-md px-3 py-2 text-sm mt-1" />
+        </div>
+        <div>
+          <label class="text-xs text-zinc-500">Registration Fee (₹)</label>
+          <input type="number" min="0" [(ngModel)]="form.registrationFee" class="w-full border border-zinc-300 rounded-md px-3 py-2 text-sm mt-1" />
+        </div>
+      </div>
+      <div>
+        <label class="text-xs text-zinc-500">Rules</label>
+        <textarea [(ngModel)]="form.rules" rows="4" class="w-full border border-zinc-300 rounded-md px-3 py-2 text-sm mt-1"></textarea>
+      </div>
+    }
+
+    @if (step() === 3) {
+      <h2 class="font-medium text-zinc-900">Format</h2>
+      @if (form.category === 'ACADEMIC') {
+        <p class="text-sm text-zinc-600">Academic competitions use configurable stages instead of a bracket format.</p>
+        <div>
+          <label class="text-xs text-zinc-500">Stages (comma-separated)</label>
+          <input [(ngModel)]="form.stages" class="w-full border border-zinc-300 rounded-md px-3 py-2 text-sm mt-1" />
+        </div>
+      } @else {
+        <div>
+          <label class="text-xs text-zinc-500">Format</label>
+          <select [(ngModel)]="form.format" class="w-full border border-zinc-300 rounded-md px-3 py-2 text-sm mt-1">
+            @for (f of formats; track f.value) { <option [value]="f.value">{{ f.label }}</option> }
+          </select>
+        </div>
+      }
+    }
+
+    @if (step() === 4) {
+      <h2 class="font-medium text-zinc-900">Preview</h2>
+      <div class="text-sm text-zinc-700 space-y-1">
+        <p><span class="text-zinc-500">Name:</span> {{ form.name || '—' }}</p>
+        <p><span class="text-zinc-500">Category:</span> {{ form.category }} @if (form.type) { ({{ form.type }}) }</p>
+        <p><span class="text-zinc-500">Dates:</span> {{ form.startDate || '—' }} to {{ form.endDate || '—' }}</p>
+        <p><span class="text-zinc-500">Registration closes:</span> {{ form.registrationDeadline || '—' }}</p>
+        <p><span class="text-zinc-500">Venue:</span> {{ form.venue || (form.mode === 'online' ? 'Online' : '—') }}</p>
+        <p><span class="text-zinc-500">Format:</span> {{ form.category === 'ACADEMIC' ? form.stages : form.format }}</p>
+        <p><span class="text-zinc-500">Fee:</span> {{ form.registrationFee > 0 ? ('₹' + form.registrationFee) : 'Free' }}</p>
+      </div>
+      <div class="flex gap-2 pt-2">
+        <button type="button" class="border border-zinc-300 text-sm font-medium px-4 py-2 rounded-md disabled:opacity-50" [disabled]="submitting()" (click)="submit('draft')">
+          Save Draft
+        </button>
+        <button type="button" class="bg-zinc-900 text-white text-sm font-medium px-4 py-2 rounded-md disabled:opacity-50" [disabled]="submitting()" (click)="submit('published')">
+          Publish
+        </button>
+      </div>
+    }
+
+    @if (step() < 4) {
+      <div class="flex justify-between pt-2">
+        <button type="button" class="text-sm text-zinc-500 disabled:opacity-0" [disabled]="step() === 1" (click)="back()">← Back</button>
+        <button type="button" class="text-sm font-medium bg-zinc-900 text-white px-4 py-2 rounded-md" (click)="next()">Next →</button>
+      </div>
+    } @else if (step() === 4) {
+      <div class="pt-2">
+        <button type="button" class="text-sm text-zinc-500" (click)="back()">← Back</button>
+      </div>
+    }
+  </div>
+}
