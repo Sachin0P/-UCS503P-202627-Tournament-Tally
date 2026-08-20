@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
@@ -37,6 +38,19 @@ app.use('/api/standings', standingsRoutes);
 app.use('/api/announcements', announcementRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/admin', adminRoutes);
+
+// In production, this same process serves the built Angular app too — one
+// deployable unit, one origin, no CORS to configure for the real frontend.
+// Locally you still run `ng serve` separately on :4200, so this only kicks
+// in when NODE_ENV=production.
+if (env.isProduction) {
+  const browserDist = path.join(__dirname, '..', 'frontend', 'dist', 'frontend', 'browser');
+  app.use(express.static(browserDist));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api')) return next();
+    res.sendFile(path.join(browserDist, 'index.html'));
+  });
+}
 
 app.use(notFoundHandler);
 app.use(errorHandler);

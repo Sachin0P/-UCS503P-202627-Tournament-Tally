@@ -4,7 +4,9 @@ const AppError = require('../utils/appError');
 const { sanitizeUser } = require('./authController');
 
 const getUserById = db.prepare('SELECT * FROM users WHERE id = ?');
-const updateCollege = db.prepare('UPDATE users SET college = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?');
+const updateProfile = db.prepare(`
+  UPDATE users SET college = ?, roll_number = ?, branch = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?
+`);
 
 const getUser = asyncHandler(async (req, res) => {
   const user = getUserById.get(req.params.id);
@@ -13,8 +15,13 @@ const getUser = asyncHandler(async (req, res) => {
 });
 
 const updateMe = asyncHandler(async (req, res) => {
-  const { college } = req.body;
-  updateCollege.run(college ?? req.user.college, req.user.id);
+  const { college, rollNumber, branch } = req.body;
+  updateProfile.run(
+    college ?? req.user.college,
+    rollNumber ?? req.user.roll_number,
+    branch ?? req.user.branch,
+    req.user.id
+  );
   res.json({ user: sanitizeUser(getUserById.get(req.user.id)) });
 });
 

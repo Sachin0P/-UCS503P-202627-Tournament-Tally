@@ -1,0 +1,10 @@
+**/node_modules
+**/dist
+**/.angular
+backend/data
+backend/.env
+frontend/src/environments/environment.ts
+frontend/src/environments/environment.development.ts
+.git
+*.log
+.DS_Store

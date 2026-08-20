@@ -8,6 +8,8 @@ CREATE TABLE IF NOT EXISTS users (
   profile_picture TEXT,
   role TEXT NOT NULL DEFAULT 'participant' CHECK (role IN ('participant', 'organizer', 'admin')),
   college TEXT,
+  roll_number TEXT,
+  branch TEXT,
   status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'suspended')),
   created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP

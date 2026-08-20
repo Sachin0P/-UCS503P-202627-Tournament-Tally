@@ -7,6 +7,8 @@ export interface User {
   profilePicture: string | null;
   role: UserRole;
   college: string | null;
+  rollNumber: string | null;
+  branch: string | null;
   status: 'active' | 'suspended';
   createdAt: string;
 }

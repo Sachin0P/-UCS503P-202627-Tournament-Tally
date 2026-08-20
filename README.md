@@ -108,6 +108,64 @@ and prints a valid app JWT for each — useful for `curl`-ing the API or scripti
 browser session (e.g. `localStorage.setItem('arenasuite_token', '<token>')`, then
 reload). It never touches the real `/api/auth/google` verification path.
 
+## Deployment
+
+Two constraints shape where this can run:
+
+- **SQLite is a file on disk.** Classic serverless platforms (Vercel/Netlify functions,
+  AWS Lambda) don't give you a writable persistent filesystem between invocations, so
+  the database would reset constantly. You need a host with a persistent volume/disk.
+- **Socket.IO needs a long-running process.** Same reason — serverless functions don't
+  hold WebSocket connections open.
+
+So: any host that runs a normal, always-on container/VM with attached storage works.
+In production, the backend also serves the built Angular app itself (see
+`app.js` — gated behind `NODE_ENV=production`), so it's **one process, one port, one
+origin** — no separate frontend host or CORS setup needed.
+
+### Docker (recommended)
+
+A multi-stage `Dockerfile` at the repo root builds the Angular app and packages it with
+the backend into one image:
+
+```bash
+docker build --build-arg GOOGLE_CLIENT_ID=<your-client-id>.apps.googleusercontent.com \
+  -t arenasuite .
+
+docker run -d -p 4000:4000 \
+  -e JWT_SECRET=<a long random string> \
+  -e ALLOWED_EMAIL_DOMAIN=thapar.edu \
+  -e ADMIN_EMAILS=<your email> \
+  -e FRONTEND_URL=https://your-domain.com \
+  -e GOOGLE_CLIENT_ID=<your-client-id>.apps.googleusercontent.com \
+  -v arenasuite_data:/app/data \
+  --name arenasuite \
+  arenasuite
+```
+
+The `-v arenasuite_data:/app/data` volume is what makes the SQLite file survive
+container restarts/redeploys — without it, every deploy starts from an empty database.
+This has been built and run locally to confirm the image works and the volume persists
+data across a restart.
+
+Any platform that deploys a `Dockerfile` with a persistent volume works: **Railway**
+and **Render** are the easiest (git-connected, build from the Dockerfile, add a volume
+mounted at `/app/data`, set the env vars above in their dashboard, done — no server
+management). **Fly.io** is similar with a bit more CLI/config. A plain **VPS**
+(DigitalOcean/Hetzner/Linode) works too if you want full control — install Docker,
+`docker run` as above behind nginx or Caddy for HTTPS, or run it directly with
+PM2 instead of Docker.
+
+### After deploying
+
+1. Add your production domain to the Google OAuth client's **Authorized JavaScript
+   origins** (Google Cloud Console → Credentials) — sign-in will fail with a console
+   error until you do.
+2. Point `FRONTEND_URL` at your real domain (used for CORS and the Socket.IO origin
+   check).
+3. Get a TLS certificate — most PaaS hosts (Railway/Render/Fly) do this automatically
+   for their subdomains and custom domains; on a VPS, use Caddy or certbot/nginx.
+
 ## Project layout
 
 ```

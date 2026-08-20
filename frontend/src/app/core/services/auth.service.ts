@@ -21,6 +21,10 @@ export class AuthService {
     return role === 'organizer' || role === 'admin';
   });
   readonly isAdmin = computed(() => this.currentUserSignal()?.role === 'admin');
+  readonly isProfileComplete = computed(() => {
+    const user = this.currentUserSignal();
+    return !!user && !!user.rollNumber && !!user.branch;
+  });
 
   constructor(private http: HttpClient, private router: Router) {}
 

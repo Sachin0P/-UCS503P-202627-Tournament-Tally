@@ -12,7 +12,9 @@ function required(name, fallback) {
 module.exports = {
   port: Number(process.env.PORT || 4000),
   frontendUrl: required('FRONTEND_URL', 'http://localhost:4200'),
-  dbPath: path.join(__dirname, '..', process.env.DB_PATH || './data/arenasuite.db'),
+  // path.resolve (not path.join) so an absolute DB_PATH (e.g. a mounted volume
+  // in production) is used as-is instead of being appended to __dirname.
+  dbPath: path.resolve(__dirname, '..', process.env.DB_PATH || './data/arenasuite.db'),
   jwtSecret: required('JWT_SECRET'),
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
   googleClientId: process.env.GOOGLE_CLIENT_ID || '',

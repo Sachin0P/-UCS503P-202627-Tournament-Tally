@@ -9,6 +9,8 @@ function sanitizeUser(user) {
     profilePicture: user.profile_picture,
     role: user.role,
     college: user.college,
+    rollNumber: user.roll_number,
+    branch: user.branch,
     status: user.status,
     createdAt: user.created_at,
   };

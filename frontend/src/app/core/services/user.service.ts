@@ -14,7 +14,7 @@ export class UserService {
     return this.http.get<{ user: User }>(`${base}/${id}`);
   }
 
-  updateMe(payload: { college?: string }): Observable<{ user: User }> {
+  updateMe(payload: { college?: string; rollNumber?: string; branch?: string }): Observable<{ user: User }> {
     return this.http.put<{ user: User }>(`${base}/me`, payload);
   }
 }
