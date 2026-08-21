@@ -33,8 +33,8 @@ import { NotificationService } from '../../../core/services/notification.service
             @if (auth.isAdmin()) {
               <a routerLink="/admin" class="hidden md:inline text-sm text-zinc-600 hover:text-zinc-900">Admin Panel</a>
             }
-            <a routerLink="/notifications" class="relative text-zinc-600 hover:text-zinc-900" aria-label="Notifications">
-              🔔
+            <a routerLink="/notifications" class="relative text-sm text-zinc-600 hover:text-zinc-900" aria-label="Notifications">
+              Notifications
               @if (notifications.unreadCount() > 0) {
                 <span class="absolute -top-1 -right-1 bg-rose-600 text-white text-[10px] leading-none rounded-full h-4 w-4 flex items-center justify-center">
                   {{ notifications.unreadCount() > 9 ? '9+' : notifications.unreadCount() }}
@@ -77,9 +77,9 @@ import { NotificationService } from '../../../core/services/notification.service
       @if (mobileOpen()) {
         <nav class="md:hidden border-t border-zinc-200 px-4 py-2 flex flex-col text-sm text-zinc-700">
           <a routerLink="/" class="py-2" (click)="mobileOpen.set(false)">Home</a>
-          <a routerLink="/sports" class="py-2" (click)="mobileOpen.set(false)">🏆 Sports</a>
-          <a routerLink="/academic" class="py-2" (click)="mobileOpen.set(false)">🎓 Academic</a>
-          <a routerLink="/esports" class="py-2" (click)="mobileOpen.set(false)">🎮 Esports</a>
+          <a routerLink="/sports" class="py-2" (click)="mobileOpen.set(false)">Sports</a>
+          <a routerLink="/academic" class="py-2" (click)="mobileOpen.set(false)">Academic</a>
+          <a routerLink="/esports" class="py-2" (click)="mobileOpen.set(false)">Esports</a>
           <a routerLink="/find-team" class="py-2" (click)="mobileOpen.set(false)">Find a Team</a>
           @if (auth.isAuthenticated()) {
             <a routerLink="/dashboard" class="py-2" (click)="mobileOpen.set(false)">My Competitions</a>

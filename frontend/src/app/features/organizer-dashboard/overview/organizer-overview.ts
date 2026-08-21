@@ -50,7 +50,7 @@ import { LoadingSpinner } from '../../../shared/components/loading-spinner/loadi
         <a routerLink="/organizer/competitions/new" class="text-sm font-medium bg-zinc-900 text-white px-3 py-1.5 rounded-md">+ New</a>
       </div>
       @if (competitions().length === 0) {
-        <app-empty-state icon="🏁" title="No competitions yet" subtitle="Create your first competition to get started." />
+        <app-empty-state title="No competitions yet" subtitle="Create your first competition to get started." />
       } @else {
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           @for (c of competitions().slice(0, 6); track c.id) {

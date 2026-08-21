@@ -1,7 +1,7 @@
 @if (loading()) {
   <app-loading-spinner />
 } @else if (!competition()) {
-  <app-empty-state icon="🔍" title="Competition not found" />
+  <app-empty-state title="Competition not found" />
 } @else {
   <div [attr.data-category]="competition()!.category">
     <div class="h-40 sm:h-56 bg-zinc-100 flex items-center justify-center text-zinc-300">
@@ -30,10 +30,10 @@
       </p>
 
       <div class="flex flex-wrap gap-x-6 gap-y-1 text-sm text-zinc-600 mt-3">
-        <span>📅 {{ competition()!.start_date | date: 'mediumDate' }} – {{ competition()!.end_date | date: 'mediumDate' }}</span>
-        <span>📍 {{ competition()!.venue || (competition()!.mode === 'online' ? 'Online' : 'TBA') }}</span>
-        <span>⏳ Register by {{ competition()!.registration_deadline | date: 'medium' }}</span>
-        <span>💰 {{ competition()!.registration_fee > 0 ? (competition()!.registration_fee | currency: 'INR' : 'symbol' : '1.0-0') : 'Free' }}</span>
+        <span>{{ competition()!.start_date | date: 'mediumDate' }} – {{ competition()!.end_date | date: 'mediumDate' }}</span>
+        <span>{{ competition()!.venue || (competition()!.mode === 'online' ? 'Online' : 'TBA') }}</span>
+        <span>Register by {{ competition()!.registration_deadline | date: 'medium' }}</span>
+        <span>{{ competition()!.registration_fee > 0 ? (competition()!.registration_fee | currency: 'INR' : 'symbol' : '1.0-0') : 'Free' }}</span>
       </div>
 
       <!-- Register panel -->
@@ -145,7 +145,7 @@
               </div>
             }
             @if (teams().length === 0) {
-              <app-empty-state icon="👥" title="No teams yet" subtitle="Be the first to create one." />
+              <app-empty-state title="No teams yet" subtitle="Be the first to create one." />
             } @else {
               <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 @for (t of teams(); track t.id) {
@@ -156,7 +156,7 @@
           }
           @case ('matches') {
             @if (matches().length === 0) {
-              <app-empty-state icon="📋" title="Fixtures not generated yet" subtitle="Check back once the organizer generates the schedule." />
+              <app-empty-state title="Fixtures not generated yet" subtitle="Check back once the organizer generates the schedule." />
             } @else if (isKnockout()) {
               <app-bracket [matches]="matches()" />
             } @else {
@@ -191,7 +191,7 @@
               </div>
             }
             @if (announcements().length === 0) {
-              <app-empty-state icon="📣" title="No announcements yet" />
+              <app-empty-state title="No announcements yet" />
             } @else {
               <div class="space-y-3">
                 @for (a of announcements(); track a.id) {

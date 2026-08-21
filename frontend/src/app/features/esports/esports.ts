@@ -8,7 +8,6 @@ import { CategoryLanding } from '../../shared/components/category-landing/catego
   template: `
     <app-category-landing
       category="ESPORTS"
-      icon="🎮"
       title="Esports"
       description="BGMI, Valorant, FIFA, CS2 and more — squad up, climb the leaderboard, and take the final."
     />

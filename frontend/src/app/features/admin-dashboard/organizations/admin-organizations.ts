@@ -11,7 +11,7 @@ import { EmptyState } from '../../../shared/components/empty-state/empty-state';
   template: `
     <h1 class="text-xl font-semibold text-zinc-900 mb-6">Organizations</h1>
     @if (organizations().length === 0) {
-      <app-empty-state icon="🏢" title="No organizations yet" />
+      <app-empty-state title="No organizations yet" />
     } @else {
       <div class="space-y-2">
         @for (o of organizations(); track o.id) {

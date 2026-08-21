@@ -10,10 +10,7 @@ import { CompetitionCategory } from '../../../core/models';
     <div [attr.data-category]="category">
       <div class="border-b border-zinc-200 bg-white">
         <div class="max-w-6xl mx-auto px-4 py-8">
-          <div class="flex items-center gap-2 text-sm font-medium" [style.color]="'var(--color-accent)'">
-            <span class="text-2xl">{{ icon }}</span>
-            <span>{{ title }}</span>
-          </div>
+          <h1 class="text-xl font-semibold" [style.color]="'var(--color-accent)'">{{ title }}</h1>
           <p class="text-zinc-500 mt-1 max-w-xl">{{ description }}</p>
         </div>
       </div>
@@ -25,7 +22,6 @@ import { CompetitionCategory } from '../../../core/models';
 })
 export class CategoryLanding {
   @Input({ required: true }) category!: CompetitionCategory;
-  @Input({ required: true }) icon!: string;
   @Input({ required: true }) title!: string;
   @Input({ required: true }) description!: string;
 }

@@ -22,9 +22,9 @@ import { LoadingSpinner } from '../loading-spinner/loading-spinner';
       @if (!fixedCategory) {
         <select [(ngModel)]="category" (ngModelChange)="onFiltersChange()" class="border border-zinc-300 rounded-md px-3 py-2 text-sm">
           <option value="">All categories</option>
-          <option value="SPORTS">🏆 Sports</option>
-          <option value="ACADEMIC">🎓 Academic</option>
-          <option value="ESPORTS">🎮 Esports</option>
+          <option value="SPORTS">Sports</option>
+          <option value="ACADEMIC">Academic</option>
+          <option value="ESPORTS">Esports</option>
         </select>
       }
       <select [(ngModel)]="mode" (ngModelChange)="onFiltersChange()" class="border border-zinc-300 rounded-md px-3 py-2 text-sm">
@@ -48,7 +48,7 @@ import { LoadingSpinner } from '../loading-spinner/loading-spinner';
     @if (loading()) {
       <app-loading-spinner />
     } @else if (competitions().length === 0) {
-      <app-empty-state icon="🔍" title="No competitions found" subtitle="Try adjusting your filters or search terms." />
+      <app-empty-state title="No competitions found" subtitle="Try adjusting your filters or search terms." />
     } @else {
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         @for (c of competitions(); track c.id) {

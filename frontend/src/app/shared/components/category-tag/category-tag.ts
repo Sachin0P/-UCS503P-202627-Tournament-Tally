@@ -1,9 +1,9 @@
 import { Component, Input, computed, signal } from '@angular/core';
 
-const META: Record<string, { icon: string; label: string; classes: string }> = {
-  SPORTS: { icon: '🏆', label: 'Sports', classes: 'bg-emerald-50 text-emerald-700' },
-  ACADEMIC: { icon: '🎓', label: 'Academic', classes: 'bg-indigo-50 text-indigo-700' },
-  ESPORTS: { icon: '🎮', label: 'Esports', classes: 'bg-rose-50 text-rose-700' },
+const META: Record<string, { label: string; classes: string }> = {
+  SPORTS: { label: 'Sports', classes: 'bg-emerald-50 text-emerald-700' },
+  ACADEMIC: { label: 'Academic', classes: 'bg-indigo-50 text-indigo-700' },
+  ESPORTS: { label: 'Esports', classes: 'bg-rose-50 text-rose-700' },
 };
 
 @Component({
@@ -11,7 +11,7 @@ const META: Record<string, { icon: string; label: string; classes: string }> = {
   standalone: true,
   template: `
     <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium {{ meta().classes }}">
-      <span>{{ meta().icon }}</span><span>{{ meta().label }}</span>
+      {{ meta().label }}
     </span>
   `,
 })

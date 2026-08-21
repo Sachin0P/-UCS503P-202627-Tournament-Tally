@@ -8,7 +8,7 @@ import { EmptyState } from '../empty-state/empty-state';
   imports: [EmptyState],
   template: `
     @if (standings.length === 0) {
-      <app-empty-state icon="📊" title="No standings yet" subtitle="Standings appear once matches are completed." />
+      <app-empty-state title="No standings yet" subtitle="Standings appear once matches are completed." />
     } @else {
       <div class="overflow-x-auto">
         <table class="w-full text-sm">

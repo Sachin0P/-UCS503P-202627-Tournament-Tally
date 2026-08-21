@@ -30,7 +30,7 @@
           <a routerLink="/competitions" class="text-xs text-zinc-500 hover:text-zinc-900">Explore more →</a>
         </div>
         @if (registrations().length === 0) {
-          <app-empty-state icon="🏁" title="No registrations yet" />
+          <app-empty-state title="No registrations yet" />
         } @else {
           <div class="space-y-2">
             @for (r of registrations(); track r.id) {
@@ -49,7 +49,7 @@
           <a routerLink="/find-team" class="text-xs text-zinc-500 hover:text-zinc-900">Find a team →</a>
         </div>
         @if (teams().length === 0) {
-          <app-empty-state icon="👥" title="You're not on a team yet" />
+          <app-empty-state title="You're not on a team yet" />
         } @else {
           <div class="space-y-2">
             @for (t of teams(); track t.id) {
@@ -65,7 +65,7 @@
       <section>
         <h2 class="font-semibold text-zinc-900 mb-3">Upcoming Matches</h2>
         @if (upcomingMatches().length === 0) {
-          <app-empty-state icon="📅" title="No upcoming matches" />
+          <app-empty-state title="No upcoming matches" />
         } @else {
           <div class="space-y-2">
             @for (m of upcomingMatches(); track m.id) {
@@ -82,7 +82,7 @@
       <section>
         <h2 class="font-semibold text-zinc-900 mb-3">Recent Results</h2>
         @if (recentResults().length === 0) {
-          <app-empty-state icon="🏅" title="No results yet" />
+          <app-empty-state title="No results yet" />
         } @else {
           <div class="space-y-2">
             @for (m of recentResults(); track m.id) {

@@ -12,7 +12,7 @@ import { EmptyState } from '../../../shared/components/empty-state/empty-state';
   template: `
     <h1 class="text-xl font-semibold text-zinc-900 mb-6">Reports</h1>
     @if (reports().length === 0) {
-      <app-empty-state icon="🚩" title="No reports" subtitle="Reports raised by users will show up here." />
+      <app-empty-state title="No reports" subtitle="Reports raised by users will show up here." />
     } @else {
       <div class="space-y-2">
         @for (r of reports(); track r.id) {

@@ -27,22 +27,19 @@ import { EmptyState } from '../../shared/components/empty-state/empty-state';
 
     <section class="max-w-6xl mx-auto px-4 py-10 grid grid-cols-1 sm:grid-cols-3 gap-4">
       <a routerLink="/sports" class="border border-zinc-200 rounded-lg p-6 bg-white hover:shadow-md transition-shadow">
-        <div class="text-3xl">🏆</div>
-        <h2 class="font-semibold text-zinc-900 mt-3">Sports</h2>
+        <h2 class="font-semibold text-zinc-900">Sports</h2>
         <p class="text-sm text-zinc-500 mt-1">Cricket, football, basketball & more</p>
-        <span class="text-sm font-medium mt-3 inline-block text-emerald-700">Explore Sports →</span>
+        <span class="text-sm font-medium mt-3 inline-block text-emerald-700">Explore Sports &rarr;</span>
       </a>
       <a routerLink="/academic" class="border border-zinc-200 rounded-lg p-6 bg-white hover:shadow-md transition-shadow">
-        <div class="text-3xl">🎓</div>
-        <h2 class="font-semibold text-zinc-900 mt-3">Academic</h2>
+        <h2 class="font-semibold text-zinc-900">Academic</h2>
         <p class="text-sm text-zinc-500 mt-1">Hackathons, quizzes, debates & more</p>
-        <span class="text-sm font-medium mt-3 inline-block text-indigo-700">Explore Academic →</span>
+        <span class="text-sm font-medium mt-3 inline-block text-indigo-700">Explore Academic &rarr;</span>
       </a>
       <a routerLink="/esports" class="border border-zinc-200 rounded-lg p-6 bg-white hover:shadow-md transition-shadow">
-        <div class="text-3xl">🎮</div>
-        <h2 class="font-semibold text-zinc-900 mt-3">Esports</h2>
+        <h2 class="font-semibold text-zinc-900">Esports</h2>
         <p class="text-sm text-zinc-500 mt-1">BGMI, Valorant, FIFA & more</p>
-        <span class="text-sm font-medium mt-3 inline-block text-rose-700">Explore Esports →</span>
+        <span class="text-sm font-medium mt-3 inline-block text-rose-700">Explore Esports &rarr;</span>
       </a>
     </section>
 
@@ -50,7 +47,7 @@ import { EmptyState } from '../../shared/components/empty-state/empty-state';
       <section class="max-w-6xl mx-auto px-4 py-6">
         <h2 class="text-lg font-semibold text-zinc-900 mb-4">{{ section.title }}</h2>
         @if (section.items().length === 0) {
-          <app-empty-state icon="—" title="Nothing to show yet" />
+          <app-empty-state title="Nothing to show yet" />
         } @else {
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             @for (c of section.items(); track c.id) {

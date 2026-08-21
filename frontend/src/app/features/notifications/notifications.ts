@@ -19,7 +19,7 @@ import { EmptyState } from '../../shared/components/empty-state/empty-state';
       </div>
 
       @if (notifications.notifications().length === 0) {
-        <app-empty-state icon="🔔" title="No notifications yet" />
+        <app-empty-state title="No notifications yet" />
       } @else {
         <div class="space-y-2">
           @for (n of notifications.notifications(); track n.id) {

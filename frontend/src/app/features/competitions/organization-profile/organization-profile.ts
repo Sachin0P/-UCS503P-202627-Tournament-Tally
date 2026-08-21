@@ -14,14 +14,14 @@ import { LoadingSpinner } from '../../../shared/components/loading-spinner/loadi
     @if (loading()) {
       <app-loading-spinner />
     } @else if (!organization()) {
-      <app-empty-state icon="🔍" title="Organization not found" />
+      <app-empty-state title="Organization not found" />
     } @else {
       <div class="max-w-5xl mx-auto px-4 py-8">
         <div class="flex items-center gap-4">
           @if (organization()!.logo) {
             <img [src]="organization()!.logo" class="h-16 w-16 rounded-lg object-cover" alt="" />
           } @else {
-            <span class="h-16 w-16 rounded-lg bg-zinc-100 flex items-center justify-center text-2xl text-zinc-300">🏢</span>
+            <span class="h-16 w-16 rounded-lg bg-zinc-100 flex items-center justify-center text-2xl font-semibold text-zinc-400">{{ organization()!.name.charAt(0) }}</span>
           }
           <div>
             <div class="flex items-center gap-2">
@@ -39,7 +39,7 @@ import { LoadingSpinner } from '../../../shared/components/loading-spinner/loadi
 
         <h2 class="font-semibold text-zinc-900 mt-8 mb-3">Upcoming Competitions</h2>
         @if (upcoming().length === 0) {
-          <app-empty-state icon="📅" title="No upcoming competitions" />
+          <app-empty-state title="No upcoming competitions" />
         } @else {
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             @for (c of upcoming(); track c.id) { <app-competition-card [competition]="c" /> }
@@ -48,7 +48,7 @@ import { LoadingSpinner } from '../../../shared/components/loading-spinner/loadi
 
         <h2 class="font-semibold text-zinc-900 mt-8 mb-3">Past Competitions</h2>
         @if (past().length === 0) {
-          <app-empty-state icon="🏁" title="No past competitions yet" />
+          <app-empty-state title="No past competitions yet" />
         } @else {
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             @for (c of past(); track c.id) { <app-competition-card [competition]="c" /> }

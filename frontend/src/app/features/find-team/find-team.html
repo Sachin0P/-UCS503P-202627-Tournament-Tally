@@ -26,9 +26,9 @@
     </select>
     <select [(ngModel)]="filterCategory" (ngModelChange)="load()" class="border border-zinc-300 rounded-md px-3 py-2 text-sm">
       <option value="">All categories</option>
-      <option value="SPORTS">🏆 Sports</option>
-      <option value="ACADEMIC">🎓 Academic</option>
-      <option value="ESPORTS">🎮 Esports</option>
+      <option value="SPORTS">Sports</option>
+      <option value="ACADEMIC">Academic</option>
+      <option value="ESPORTS">Esports</option>
     </select>
     <input [(ngModel)]="filterRole" (ngModelChange)="load()" placeholder="Role or skill..." class="border border-zinc-300 rounded-md px-3 py-2 text-sm" />
 
@@ -66,7 +66,7 @@
     <app-loading-spinner />
   } @else if (activeTab() === 'teams') {
     @if (teams().length === 0) {
-      <app-empty-state icon="👥" title="No teams looking for members right now" />
+      <app-empty-state title="No teams looking for members right now" />
     } @else {
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         @for (t of teams(); track t.id) {
@@ -76,7 +76,7 @@
     }
   } @else {
     @if (posts().length === 0) {
-      <app-empty-state icon="🙋" title="No one is looking for a team right now" />
+      <app-empty-state title="No one is looking for a team right now" />
     } @else {
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         @for (p of posts(); track p.id) {

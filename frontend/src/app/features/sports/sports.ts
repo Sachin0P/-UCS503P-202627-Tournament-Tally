@@ -8,7 +8,6 @@ import { CategoryLanding } from '../../shared/components/category-landing/catego
   template: `
     <app-category-landing
       category="SPORTS"
-      icon="🏆"
       title="Sports"
       description="Cricket, football, basketball, badminton and more — register, build a team, and chase the trophy."
     />

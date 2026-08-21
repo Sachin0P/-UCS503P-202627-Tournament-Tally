@@ -27,13 +27,13 @@ import { DatePipe, CurrencyPipe } from '@angular/common';
         <p class="text-sm text-zinc-500 mt-0.5">{{ competition.organizer_name }} · {{ competition.organizer_college }}</p>
 
         <div class="mt-3 text-sm text-zinc-600 space-y-1">
-          <div>📅 {{ competition.start_date | date: 'mediumDate' }}</div>
+          <div>{{ competition.start_date | date: 'mediumDate' }}</div>
           @if (competition.venue) {
-            <div>📍 {{ competition.venue }} @if (competition.mode === 'online') { <span>(Online)</span> }</div>
+            <div>{{ competition.venue }} @if (competition.mode === 'online') { <span>(Online)</span> }</div>
           } @else {
-            <div>📍 {{ competition.mode === 'online' ? 'Online' : 'TBA' }}</div>
+            <div>{{ competition.mode === 'online' ? 'Online' : 'TBA' }}</div>
           }
-          <div>⏳ Register by {{ competition.registration_deadline | date: 'mediumDate' }}</div>
+          <div class="text-zinc-500">Register by {{ competition.registration_deadline | date: 'mediumDate' }}</div>
         </div>
 
         <div class="mt-3 flex items-center justify-between text-sm">

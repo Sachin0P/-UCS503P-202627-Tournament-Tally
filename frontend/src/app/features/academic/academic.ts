@@ -8,7 +8,6 @@ import { CategoryLanding } from '../../shared/components/category-landing/catego
   template: `
     <app-category-landing
       category="ACADEMIC"
-      icon="🎓"
       title="Academic"
       description="Hackathons, coding contests, quizzes, debates and case competitions — form a team and get evaluated."
     />
